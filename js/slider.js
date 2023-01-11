@@ -25,8 +25,8 @@ paginationsUl.children[currentSlide].classList.add("active");
 let paginationsLis = Array.from(paginationsUl.children);
 paginationsLis.forEach((li, index) => (li.onclick = checker));
 
-// Setting interval to swap between gallery
-let intervalTime = 2000;
+// Setting interval to swap between Images
+let intervalTime = 3000;
 let intervalNumber = setInterval(() => prevButton.click(), intervalTime);
 
 // Previous And Next Buttons
@@ -55,7 +55,9 @@ function checker(e) {
   });
   sliderImages[currentSlide].classList.add("active");
   slideNumberElement.textContent = `Slide Number : ${currentSlide + 1}`;
-  paginationsLis[currentSlide].click();
+  // To prevent Pagination Li From Clicking twice on one click action
+  if (e.currentTarget === nextButton || e.currentTarget === prevButton)
+    paginationsLis[currentSlide].click();
 }
 
 function nextSlide() {
