@@ -16,49 +16,52 @@ let paginations = document.getElementById("paginations");
 let paginationsUl = document.createElement("ul");
 sliderImages.forEach((element, index) => {
   let paginationLi = document.createElement("li");
-  paginationLi.innerHTML = `${index + 1}`;
+  paginationLi.appendChild(document.createTextNode(index + 1));
   paginationsUl.appendChild(paginationLi);
 });
-// Setting interval to swap between gallery
-let intervalTime = 2000;
-let intervalNumber = setInterval(previousSlide, intervalTime);
-function setNewInterval(interval) {
-  clearInterval(intervalNumber);
-  intervalNumber = setInterval(previousSlide, interval);
-}
 paginations.appendChild(paginationsUl);
+
 paginationsUl.children[currentSlide].classList.add("active");
 let paginationsLis = Array.from(paginationsUl.children);
-paginationsLis.forEach((li, index) => {
-  li.onclick = (e) => {
-    setNewInterval(intervalTime);
-    paginationsLis.forEach((li) => li.classList.remove("active"));
-    e.currentTarget.classList.add("active");
-    sliderImages[currentSlide].classList.remove("active");
-    currentSlide = index;
-    sliderImages[currentSlide].classList.add("active");
-    slideNumberElement.textContent = `Slide Number : ${currentSlide + 1}`;
-  };
-});
+paginationsLis.forEach((li, index) => (li.onclick = checker));
+
+// Setting interval to swap between gallery
+let intervalTime = 2000;
+let intervalNumber = setInterval(() => prevButton.click(), intervalTime);
 
 // Previous And Next Buttons
 let nextButton = document.getElementById("next");
 let prevButton = document.getElementById("prev");
+
+nextButton.onclick = checker;
+prevButton.onclick = checker;
+
+function setNewInterval(interval) {
+  clearInterval(intervalNumber);
+  intervalNumber = setInterval(() => prevButton.click(), interval);
+}
+
+function checker(e) {
+  setNewInterval(intervalTime);
+  sliderImages[currentSlide].classList.remove("active");
+  if (e.currentTarget === nextButton) nextSlide();
+  if (e.currentTarget === prevButton) previousSlide();
+  paginationsLis.forEach((li, index) => {
+    if (e.currentTarget === li) {
+      paginationsLis.forEach((li) => li.classList.remove("active"));
+      e.currentTarget.classList.add("active");
+      currentSlide = index;
+    }
+  });
+  sliderImages[currentSlide].classList.add("active");
+  slideNumberElement.textContent = `Slide Number : ${currentSlide + 1}`;
+  paginationsLis[currentSlide].click();
+}
+
 function nextSlide() {
-  setNewInterval(intervalTime);
-  sliderImages[currentSlide].classList.remove("active");
   currentSlide = currentSlide === slidesCount - 1 ? 0 : currentSlide + 1;
-  sliderImages[currentSlide].classList.add("active");
-  slideNumberElement.textContent = `Slide Number : ${currentSlide + 1}`;
-  paginationsLis[currentSlide].click();
 }
+
 function previousSlide() {
-  setNewInterval(intervalTime);
-  sliderImages[currentSlide].classList.remove("active");
   currentSlide = currentSlide === 0 ? slidesCount - 1 : currentSlide - 1;
-  sliderImages[currentSlide].classList.add("active");
-  slideNumberElement.textContent = `Slide Number : ${currentSlide + 1}`;
-  paginationsLis[currentSlide].click();
 }
-nextButton.onclick = nextSlide;
-prevButton.onclick = previousSlide;
